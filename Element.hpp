@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <sstream>
+#include <string>
 #include <map>
 
 namespace EasyJSon {
@@ -117,7 +117,7 @@ namespace EasyJSon {
 
 	};
 
-	 	/*
+	/*
 	 * @brief Sub node accessor
 	 * @param p_ID : Index of child node
 	 * @return The node, or null filled node
