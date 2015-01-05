@@ -97,7 +97,7 @@ namespace EasyJSon
     /// @brief Sub node accessors
     /// @param p_ID : Index of child node
     /// @return The node, or null filled node
-    template <> Node<std::string> & Node<std::string>::operator[](const size_t & p_ID)
+    template <> inline Node<std::string> & Node<std::string>::operator[](const size_t & p_ID)
     {
         m_Type = NT_ARRAY;
 
@@ -111,7 +111,7 @@ namespace EasyJSon
     /// @brief Sub node accessors
     /// @param p_ID : Index of child node
     /// @return The node, or null filled node
-    template <> Node<std::wstring> & Node<std::wstring>::operator[](const size_t & p_ID)
+    template <> inline Node<std::wstring> & Node<std::wstring>::operator[](const size_t & p_ID)
     {
         m_Type = NT_ARRAY;
 
