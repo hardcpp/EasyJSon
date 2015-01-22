@@ -137,7 +137,7 @@ namespace EasyJSon
             StringAllocatorStream l_Out;
             l_Out << "[";
             
-            for (std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
@@ -154,7 +154,7 @@ namespace EasyJSon
             StringAllocatorStream l_Out;
             l_Out << "{";
             
-            for (std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
