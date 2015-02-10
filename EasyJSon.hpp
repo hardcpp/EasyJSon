@@ -8,7 +8,7 @@
 #include <string>
 #include <map>
 
-namespace EasyJSon 
+namespace EasyJSon
 {
 
     /// JSon node element type
@@ -125,7 +125,7 @@ namespace EasyJSon
 
     /// @brief Serialize
     /// @return String
-    template <class StringAllocator> 
+    template <class StringAllocator>
     template <class StringAllocatorStream> StringAllocator Node<StringAllocator>::Serialize()
     {
         if (m_Type == NT_DATA)
@@ -136,13 +136,13 @@ namespace EasyJSon
         {
             StringAllocatorStream l_Out;
             l_Out << "[";
-            
+
             for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
 
-                l_Out << l_It->second.Serialize<StringAllocatorStream>();
+                l_Out << l_It->second.template Serialize<StringAllocatorStream>();
             }
 
             l_Out << "]";
@@ -153,25 +153,25 @@ namespace EasyJSon
         {
             StringAllocatorStream l_Out;
             l_Out << "{";
-            
+
             for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
 
-                l_Out << "\"" << l_It->first << "\" : " << l_It->second.Serialize<StringAllocatorStream>();
+                l_Out << "\"" << l_It->first << "\" : " << l_It->second.template Serialize<StringAllocatorStream>();
             }
 
             l_Out << "}";
 
             return l_Out.str();
         }
-        
+
         return StringAllocator("");
     }
     /// @brief Serialize
     /// @return String
-    template <> 
+    template <>
     template <class StringAllocatorStream> std::wstring Node<std::wstring>::Serialize()
     {
         if (m_Type == NT_DATA)
@@ -182,7 +182,7 @@ namespace EasyJSon
         {
             StringAllocatorStream l_Out;
             l_Out << L"[";
-            
+
             for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
@@ -199,7 +199,7 @@ namespace EasyJSon
         {
             StringAllocatorStream l_Out;
             l_Out << L"{";
-            
+
             for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
@@ -212,7 +212,7 @@ namespace EasyJSon
 
             return l_Out.str();
         }
-        
+
         return std::wstring(L"");
     }
 
