@@ -63,7 +63,7 @@ namespace EasyJSon
             /// Set data
             /// @param p_Data : New data str
             /// @param p_IsArithmetic : Is numeric value
-            void SetData(const StringAllocator & p_Data, bool p_IsArithmetic = false)
+            inline void SetData(const StringAllocator & p_Data, bool p_IsArithmetic = false)
             {
                 m_Type = p_IsArithmetic ? NT_DATA_INT : NT_DATA;
                 m_Data = p_Data;
@@ -77,11 +77,13 @@ namespace EasyJSon
             }
 
             /// Serialize
+            /// @param p_Pretty : Pretty format
+            /// @param p_Level : Recursive level
             /// @return String
-            template<class StringAllocatorStream> StringAllocator Serialize();
+            template<class StringAllocatorStream> inline StringAllocator Serialize(bool p_Pretty, int p_Level = 0);
 
             /// Data editor operator
-            template<typename T> Node & operator=(T p_Data);
+            template<typename T> inline Node & operator=(T p_Data);
 
         private:
             /// Node type
@@ -123,9 +125,11 @@ namespace EasyJSon
     }
 
     /// @brief Serialize
+    /// @param p_Pretty : Pretty format
+    /// @param p_Level : Recursive level
     /// @return String
     template <class StringAllocator>
-    template <class StringAllocatorStream> StringAllocator Node<StringAllocator>::Serialize()
+    template <class StringAllocatorStream> inline StringAllocator Node<StringAllocator>::Serialize(bool p_Pretty, int p_Level)
     {
         if (m_Type == NT_DATA)
         {
@@ -138,34 +142,48 @@ namespace EasyJSon
         else if (m_Type == NT_ARRAY)
         {
             StringAllocatorStream l_Out;
-            l_Out << "[";
+
+            if (p_Pretty && p_Level != 0)
+                l_Out << "\n";
+
+            l_Out << std::string(p_Level, '\t') << "[" << (p_Pretty ? "\n" : "");
 
             for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
 
-                l_Out << l_It->second.template Serialize<StringAllocatorStream>();
+                l_Out << l_It->second.template Serialize<StringAllocatorStream>(p_Pretty, p_Level + 1);
             }
 
-            l_Out << "]";
+             if (p_Pretty)
+                 l_Out << "\n";
+
+            l_Out << std::string(p_Level, '\t') << "]";
 
             return l_Out.str();
         }
         else
         {
             StringAllocatorStream l_Out;
-            l_Out << "{";
+
+            if (p_Pretty && p_Level != 0)
+                l_Out << "\n";
+
+            l_Out << std::string(p_Level, '\t') << "{" << (p_Pretty ? "\n" : "");
 
             for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
-                    l_Out << ",";
+                    l_Out << ",\n";
 
-                l_Out << "\"" << l_It->first << "\" : " << l_It->second.template Serialize<StringAllocatorStream>();
+                l_Out << std::string(p_Level + 1, '\t') << "\"" << l_It->first << "\": " << l_It->second.template Serialize<StringAllocatorStream>(p_Pretty, p_Level + 1);
             }
 
-            l_Out << "}";
+            if (p_Pretty)
+                l_Out << "\n";
+
+            l_Out << std::string(p_Level, '\t') << "}";
 
             return l_Out.str();
         }
@@ -173,9 +191,11 @@ namespace EasyJSon
         return StringAllocator("");
     }
     /// @brief Serialize
+    /// @param p_Pretty : Pretty format
+    /// @param p_Level : Recursive level
     /// @return String
     template <>
-    template <class StringAllocatorStream> std::wstring Node<std::wstring>::Serialize()
+    template <class StringAllocatorStream> inline std::wstring Node<std::wstring>::Serialize(bool p_Pretty, int p_Level)
     {
         if (m_Type == NT_DATA)
         {
@@ -188,34 +208,48 @@ namespace EasyJSon
         else if (m_Type == NT_ARRAY)
         {
             StringAllocatorStream l_Out;
-            l_Out << L"[";
+
+            if (p_Pretty && p_Level != 0)
+                l_Out << L"\n";
+
+            l_Out << std::wstring(p_Level, L'\t') << L"[" << (p_Pretty ? L"\n" : L"");
 
             for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << L",";
 
-                l_Out << l_It->second.Serialize<StringAllocatorStream>();
+                l_Out << l_It->second.Serialize<StringAllocatorStream>(p_Pretty, p_Level + 1);
             }
 
-            l_Out << L"]";
+            if (p_Pretty)
+                l_Out << "\n";
+
+            l_Out << std::wstring(p_Level, L'\t') << L"]";
 
             return l_Out.str();
         }
         else
         {
             StringAllocatorStream l_Out;
-            l_Out << L"{";
+
+            if (p_Pretty && p_Level != 0)
+                l_Out << L"\n";
+
+            l_Out << std::wstring(p_Level, L'\t') << L"{" << (p_Pretty ? L"\n" : L"");
 
             for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
-                    l_Out << ",";
+                    l_Out << ",\n";
 
-                l_Out << L"\"" << l_It->first << L"\" : " << l_It->second.Serialize<StringAllocatorStream>();
+                l_Out << std::wstring(p_Level + 1, L'\t') << L"\"" << l_It->first << L"\": " << l_It->second.Serialize<StringAllocatorStream>(p_Pretty, p_Level + 1);
             }
 
-            l_Out << L"}";
+            if (p_Pretty)
+                l_Out << "\n";
+
+            l_Out << std::wstring(p_Level, L'\t') << L"}";
 
             return l_Out.str();
         }
@@ -224,43 +258,43 @@ namespace EasyJSon
     }
 
     /// Data editor operator
-    template <>
-    template<typename T> Node<std::string> & Node<std::string>::operator=(T p_Data)
+    template<>
+    template<typename T> inline Node<std::string> & Node<std::string>::operator=(T p_Data)
     {
         SetData(std::to_string(p_Data), std::is_arithmetic<T>::value);
         return *this;
     }
     /// Data editor operator
-    template <>
-    template<typename T> Node<std::wstring> & Node<std::wstring>::operator=(T p_Data)
+    template<>
+    template<typename T> inline Node<std::wstring> & Node<std::wstring>::operator=(T p_Data)
     {
         SetData(std::to_wstring(p_Data), std::is_arithmetic<T>::value);
         return *this;
     }
     /// Data editor operator
-    template <>
-    template<> Node<std::string> & Node<std::string>::operator=(const char * p_Data)
+    template<>
+    template<> inline Node<std::string> & Node<std::string>::operator=(const char * p_Data)
     {
         SetData(p_Data);
         return *this;
     }
     /// Data editor operator
-    template <>
-    template<> Node<std::string> & Node<std::string>::operator=(std::string p_Data)
+    template<>
+    template<> inline Node<std::string> & Node<std::string>::operator=(std::string p_Data)
     {
         SetData(p_Data);
         return *this;
     }
     /// Data editor operator
-    template <>
-    template<> Node<std::wstring> & Node<std::wstring>::operator=(const wchar_t * p_Data)
+    template<>
+    template<> inline Node<std::wstring> & Node<std::wstring>::operator=(const wchar_t * p_Data)
     {
         SetData(p_Data);
         return *this;
     }
     /// Data editor operator
-    template <>
-    template<> Node<std::wstring> & Node<std::wstring>::operator=(std::wstring p_Data)
+    template<>
+    template<> inline Node<std::wstring> & Node<std::wstring>::operator=(std::wstring p_Data)
     {
         SetData(p_Data);
         return *this;
