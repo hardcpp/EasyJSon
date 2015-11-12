@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <map>
+#include <type_traits>
 
 namespace EasyJSon
 {
@@ -16,7 +17,8 @@ namespace EasyJSon
     {
         NT_INDEXED_ARRAY,
         NT_ARRAY,
-        NT_DATA
+        NT_DATA,
+        NT_DATA_INT
     };
 
     /// JSon node
@@ -60,9 +62,10 @@ namespace EasyJSon
             }
             /// Set data
             /// @param p_Data : New data str
-            void SetData(const StringAllocator & p_Data)
+            /// @param p_IsArithmetic : Is numeric value
+            void SetData(const StringAllocator & p_Data, bool p_IsArithmetic = false)
             {
-                m_Type = NT_DATA;
+                m_Type = p_IsArithmetic ? NT_DATA_INT : NT_DATA;
                 m_Data = p_Data;
             }
 
@@ -78,11 +81,7 @@ namespace EasyJSon
             template<class StringAllocatorStream> StringAllocator Serialize();
 
             /// Data editor operator
-            Node & operator=(const StringAllocator & p_Data)
-            {
-                SetData(p_Data);
-                return *this;
-            }
+            template<typename T> Node & operator=(T p_Data);
 
         private:
             /// Node type
@@ -132,12 +131,16 @@ namespace EasyJSon
         {
             return StringAllocator("\"" + m_Data + "\"");
         }
+        else if (m_Type == NT_DATA_INT)
+        {
+            return StringAllocator(m_Data);
+        }
         else if (m_Type == NT_ARRAY)
         {
             StringAllocatorStream l_Out;
             l_Out << "[";
 
-            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
@@ -154,7 +157,7 @@ namespace EasyJSon
             StringAllocatorStream l_Out;
             l_Out << "{";
 
-            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (typename std::map<StringAllocator, Node<StringAllocator>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
@@ -178,12 +181,16 @@ namespace EasyJSon
         {
             return std::wstring(L"\"" + m_Data + L"\"");
         }
+        else if (m_Type == NT_DATA_INT)
+        {
+            return std::wstring(m_Data);
+        }
         else if (m_Type == NT_ARRAY)
         {
             StringAllocatorStream l_Out;
             l_Out << L"[";
 
-            for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << L",";
@@ -200,7 +207,7 @@ namespace EasyJSon
             StringAllocatorStream l_Out;
             l_Out << L"{";
 
-            for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin() ; l_It != m_ChildNodes.end() ; l_It++)
+            for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
                     l_Out << ",";
@@ -214,6 +221,49 @@ namespace EasyJSon
         }
 
         return std::wstring(L"");
+    }
+
+    /// Data editor operator
+    template <>
+    template<typename T> Node<std::string> & Node<std::string>::operator=(T p_Data)
+    {
+        SetData(std::to_string(p_Data), std::is_arithmetic<T>::value);
+        return *this;
+    }
+    /// Data editor operator
+    template <>
+    template<typename T> Node<std::wstring> & Node<std::wstring>::operator=(T p_Data)
+    {
+        SetData(std::to_wstring(p_Data), std::is_arithmetic<T>::value);
+        return *this;
+    }
+    /// Data editor operator
+    template <>
+    template<> Node<std::string> & Node<std::string>::operator=(const char * p_Data)
+    {
+        SetData(p_Data);
+        return *this;
+    }
+    /// Data editor operator
+    template <>
+    template<> Node<std::string> & Node<std::string>::operator=(std::string p_Data)
+    {
+        SetData(p_Data);
+        return *this;
+    }
+    /// Data editor operator
+    template <>
+    template<> Node<std::wstring> & Node<std::wstring>::operator=(const wchar_t * p_Data)
+    {
+        SetData(p_Data);
+        return *this;
+    }
+    /// Data editor operator
+    template <>
+    template<> Node<std::wstring> & Node<std::wstring>::operator=(std::wstring p_Data)
+    {
+        SetData(p_Data);
+        return *this;
     }
 
 }   ///< namespace EasyJSon
