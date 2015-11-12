@@ -13,7 +13,7 @@ void Write()
     l_Root["Menu"]["Item"][1]["caption"]     = "forum";
     l_Root["Menu"]["Item"][1]["link"]     = "forum.html";
 
-    std::cout << l_Root.Serialize<std::ostringstream>()  << std::endl;
+    std::cout << l_Root.Serialize<std::ostringstream>(true)  << std::endl;
 }
 
 int main()
