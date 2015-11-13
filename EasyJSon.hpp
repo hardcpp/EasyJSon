@@ -223,7 +223,7 @@ namespace EasyJSon
             }
 
             if (p_Pretty)
-                l_Out << "\n";
+                l_Out << L"\n";
 
             l_Out << std::wstring(p_Level, L'\t') << L"]";
 
@@ -241,13 +241,13 @@ namespace EasyJSon
             for (std::map<std::wstring, Node<std::wstring>>::iterator l_It = m_ChildNodes.begin(); l_It != m_ChildNodes.end(); l_It++)
             {
                 if (l_It != m_ChildNodes.begin())
-                    l_Out << ",\n";
+                    l_Out << L",\n";
 
                 l_Out << std::wstring(p_Level + 1, L'\t') << L"\"" << l_It->first << L"\": " << l_It->second.Serialize<StringAllocatorStream>(p_Pretty, p_Level + 1);
             }
 
             if (p_Pretty)
-                l_Out << "\n";
+                l_Out << L"\n";
 
             l_Out << std::wstring(p_Level, L'\t') << L"}";
 
